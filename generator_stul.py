@@ -8,7 +8,7 @@ import random
 
 
 font_cesta = 'pismo.TTF'
-font_cesta2 = 'pismo2.TTF'
+font_cesta2 = 'pismo2.ttf'
 barvy = ['S', 'H', 'D', 'C']
 souradnice = [[100, 300], [100, 2200], [2900, 300],
               [2900, 2200], [1600, 300], [1600, 2200]]
