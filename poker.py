@@ -368,6 +368,11 @@ class Karta:
 
 class Ui_MainWindow(object):
     def spoctiPpsti(self):
+        if hasattr(self, 'snimek'):
+            if not hasattr(self.snimek, 'pocet_karet_pozadi'):
+                return
+        else:
+            return
         # vsechny karty jsou odkryty - staci vyhodnotit
         if self.snimek.pocet_karet_pozadi == 0:
             pocet_simulaci = 1
@@ -555,7 +560,7 @@ class Ui_MainWindow(object):
         MainWindow.setMaximumSize(QtCore.QSize(100000, 70000))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(
-            "poker_icon.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            "img/poker_icon.svg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStatusTip("")
         MainWindow.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
@@ -626,32 +631,32 @@ class Ui_MainWindow(object):
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.action_nacti_sit = QtWidgets.QAction(MainWindow)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("folder.svg"),
+        icon1.addPixmap(QtGui.QPixmap("img/folder.svg"),
                         QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_nacti_sit.setIcon(icon1)
         self.action_nacti_sit.setShortcutVisibleInContextMenu(False)
         self.action_nacti_sit.setObjectName("action_nacti_sit")
         self.action_nacti_obrazek = QtWidgets.QAction(MainWindow)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap("obrazek.svg"),
+        icon2.addPixmap(QtGui.QPixmap("img/obrazek.svg"),
                         QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_nacti_obrazek.setIcon(icon2)
         self.action_nacti_obrazek.setObjectName("action_nacti_obrazek")
         self.action_generuj_obrazek = QtWidgets.QAction(MainWindow)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap("generovany_obrazek.svg"),
+        icon3.addPixmap(QtGui.QPixmap("img/generovany_obrazek.svg"),
                         QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_generuj_obrazek.setIcon(icon3)
         self.action_generuj_obrazek.setObjectName("action_generuj_obrazek")
         self.action_rozpoznej_karty = QtWidgets.QAction(MainWindow)
         icon4 = QtGui.QIcon()
-        icon4.addPixmap(QtGui.QPixmap("karty.svg"),
+        icon4.addPixmap(QtGui.QPixmap("img/karty.svg"),
                         QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_rozpoznej_karty.setIcon(icon4)
         self.action_rozpoznej_karty.setObjectName("action_rozpoznej_karty")
         self.action_spocti_pravdepodobnosti = QtWidgets.QAction(MainWindow)
         icon5 = QtGui.QIcon()
-        icon5.addPixmap(QtGui.QPixmap("poker.svg"),
+        icon5.addPixmap(QtGui.QPixmap("img/poker.svg"),
                         QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.action_spocti_pravdepodobnosti.setIcon(icon5)
         self.action_spocti_pravdepodobnosti.setObjectName(
