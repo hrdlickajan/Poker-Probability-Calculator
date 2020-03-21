@@ -1,7 +1,7 @@
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
-from PIL import ImageTk
+# from PIL import ImageTk
 import itertools
 import os
 import random
@@ -359,10 +359,6 @@ class Stul:
     def uloz(self):
         self.img.save(self.cesta)
 
-    def zmenVelikost(self, sirka, vyska):
-        self.img_tk = ImageTk.PhotoImage(self.img.resize((sirka, vyska),
-                                                         Image.ANTIALIAS))
-
 
 class Hrac:
     _ids = itertools.count(1)
@@ -403,9 +399,9 @@ def main():
         hrac.nactiKarty()
         hrac.slucKarty()
         stul.pridej(hrac.img, hrac.souradnice)
-    stul.zmenVelikost(1000, 600)
+    # stul.zmenVelikost(1000, 600)
     stul.uloz()
-    return stul
+    # return stul
 
 
 if __name__ == "__main__":
