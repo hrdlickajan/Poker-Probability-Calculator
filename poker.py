@@ -419,15 +419,17 @@ class Ui_MainWindow(object):
                 vyherce.pocet_vyher += 1
 
         for hrac in self.snimek.hraci:
-            item = QtWidgets.QTableWidgetItem(
-                "{0:.2f}".format(100*hrac.pocet_vyher/pocet_simulaci) + " %")
+            item = QtWidgets.QTableWidgetItem()
+            pocet_vyher = round(100*hrac.pocet_vyher/pocet_simulaci, 2)
+            item.setData(QtCore.Qt.EditRole, pocet_vyher)
             item.setTextAlignment(
                 QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
             item.setFont(font)
             self.table_karty_hraci.setItem(hrac.id-1, 1,
                                            QtWidgets.QTableWidgetItem(item))
-            item = QtWidgets.QTableWidgetItem(
-                "{0:.2f}".format(100*hrac.pocet_remiz/pocet_simulaci) + " %")
+            item = QtWidgets.QTableWidgetItem()
+            pocet_remiz = round(100*hrac.pocet_remiz/pocet_simulaci, 2)
+            item.setData(QtCore.Qt.EditRole, pocet_remiz)
             item.setTextAlignment(
                 QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
             item.setFont(font)
@@ -679,12 +681,13 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Poker"))
+        self.table_karty_hraci.setSortingEnabled(True)
         item = self.table_karty_hraci.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Karty"))
         item = self.table_karty_hraci.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Pravděpodobnost výhry"))
+        item.setText(_translate("MainWindow", "Pravděpodobnost výhry [%]"))
         item = self.table_karty_hraci.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "Pravděpodobnost remízy"))
+        item.setText(_translate("MainWindow", "Pravděpodobnost remízy [%]"))
         self.table_karty_stul.setSortingEnabled(True)
         item = self.table_karty_stul.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Flop"))
