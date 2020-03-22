@@ -3,7 +3,7 @@ Zpracováno v Python 3. Repositář obsahuje GUI pro detekci pokerových karet a
 Lze vygenerovat obrázek ze syntetických dat, která jsou tvořena ze 3 setů.
 
 <p align="center"> 
-<img src="https://raw.githubusercontent.com/hrdlickajan/DP/master/img/vzor.png">
+<img src="https://raw.githubusercontent.com/hrdlickajan/DP/blob/master/img/vzor.PNG">
 </p>
 
 ### Install
