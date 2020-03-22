@@ -424,6 +424,7 @@ class Ui_MainWindow(object):
             item.setData(QtCore.Qt.EditRole, pocet_vyher)
             item.setTextAlignment(
                 QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+            item.setForeground(QtGui.QColor(*hrac.barva))
             item.setFont(font)
             self.table_karty_hraci.setItem(hrac.id-1, 1,
                                            QtWidgets.QTableWidgetItem(item))
@@ -432,6 +433,7 @@ class Ui_MainWindow(object):
             item.setData(QtCore.Qt.EditRole, pocet_remiz)
             item.setTextAlignment(
                 QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+            item.setForeground(QtGui.QColor(*hrac.barva))
             item.setFont(font)
             self.table_karty_hraci.setItem(hrac.id-1, 2,
                                            QtWidgets.QTableWidgetItem(item))
@@ -513,7 +515,7 @@ class Ui_MainWindow(object):
             item.setTextAlignment(
                 QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
             item.setFont(font)
-            item.setBackground(QtGui.QColor(*hrac.barva))
+            item.setForeground(QtGui.QColor(*hrac.barva))
             self.table_karty_hraci.setItem(hrac.id-1, 0,
                                            QtWidgets.QTableWidgetItem(item))
         self.table_karty_hraci.setSortingEnabled(False)
