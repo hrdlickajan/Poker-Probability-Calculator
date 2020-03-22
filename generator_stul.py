@@ -243,7 +243,7 @@ class Karta:
         rot = self.img.rotate(self.rotace,
                               expand=1).resize(rotated_temp.size)
         self.rotated.paste(rot, (0, 0), rot)
-        self.rotated.save('test2.png')
+        # self.rotated.save('test2.png')
 
     def uloz(self):
         self.resized.save(self.cesta)

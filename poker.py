@@ -373,6 +373,13 @@ class Ui_MainWindow(object):
                 return
         else:
             return
+        try:  # pokud uzivatel klikne dvakrat po sobe na tlacitko, nedelej nic
+            self.table_karty_hraci.item(0, 1).text()
+        except AttributeError:
+            pass
+        else:
+            return
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         # vsechny karty jsou odkryty - staci vyhodnotit
         if self.snimek.pocet_karet_pozadi == 0:
             pocet_simulaci = 1
@@ -439,6 +446,7 @@ class Ui_MainWindow(object):
                                            QtWidgets.QTableWidgetItem(item))
         self.table_karty_hraci.setSortingEnabled(True)
         self.table_karty_hraci.sortByColumn(1, QtCore.Qt.DescendingOrder)
+        QtWidgets.QApplication.restoreOverrideCursor()
 
     def smazTabulku(self, table):
         table.setRowCount(0)
@@ -451,7 +459,11 @@ class Ui_MainWindow(object):
             return
         if not hasattr(self, 'snimek'):
             self.snimek = Snimek("stul_temp.png")
+        # pokud uzivatel klikne dvakrat po sobe na tlacitko, nedelej nic
+        if self.table_karty_stul.rowCount() != 0:
+            return
         global dostupne_karty, barva_stul, font
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         dostupne_karty = kombinace.copy()  # zbytek karet v baliku
         self.snimek.segmentace()
         self.snimek.ziskejKarty()
@@ -519,6 +531,7 @@ class Ui_MainWindow(object):
             self.table_karty_hraci.setItem(hrac.id-1, 0,
                                            QtWidgets.QTableWidgetItem(item))
         self.table_karty_hraci.setSortingEnabled(False)
+        QtWidgets.QApplication.restoreOverrideCursor()
 
     def nactiSit(self):
         sit_dialog = QFileDialog.getExistingDirectory(
@@ -526,8 +539,10 @@ class Ui_MainWindow(object):
         if not sit_dialog:
             return
         try:
+            QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.sit = Sit(sit_dialog)
         finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
             if self.sit.sit_nactena:
                 self.statusBar.showMessage("Síť načtena")
             else:
@@ -538,19 +553,23 @@ class Ui_MainWindow(object):
             None, "Vyber obrázek", None, filter='Obrázky (*.png *.jpeg *.jpg)')
         if not obrazek_dialog:
             return
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         self.smazTabulku(self.table_karty_stul)
         self.smazTabulku(self.table_karty_hraci)
         self.label.setPixmap(QtGui.QPixmap(obrazek_dialog))
         self.label.setScaledContents(True)
         self.snimek = Snimek(obrazek_dialog)
+        QtWidgets.QApplication.restoreOverrideCursor()
 
     def generujObrazek(self):
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         self.smazTabulku(self.table_karty_stul)
         self.smazTabulku(self.table_karty_hraci)
         generator_stul.main()  # skript ulozi obrazek do "stul_temp.png"
         self.snimek = Snimek("stul_temp.png")
         self.label.setPixmap(QtGui.QPixmap("stul_temp.png"))
         self.label.setScaledContents(True)
+        QtWidgets.QApplication.restoreOverrideCursor()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
