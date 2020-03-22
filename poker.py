@@ -435,6 +435,8 @@ class Ui_MainWindow(object):
             item.setFont(font)
             self.table_karty_hraci.setItem(hrac.id-1, 2,
                                            QtWidgets.QTableWidgetItem(item))
+        self.table_karty_hraci.setSortingEnabled(True)
+        self.table_karty_hraci.sortByColumn(1, QtCore.Qt.DescendingOrder)
 
     def smazTabulku(self, table):
         table.setRowCount(0)
@@ -514,6 +516,7 @@ class Ui_MainWindow(object):
             item.setBackground(QtGui.QColor(*hrac.barva))
             self.table_karty_hraci.setItem(hrac.id-1, 0,
                                            QtWidgets.QTableWidgetItem(item))
+        self.table_karty_hraci.setSortingEnabled(False)
 
     def nactiSit(self):
         sit_dialog = QFileDialog.getExistingDirectory(
@@ -681,7 +684,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Poker"))
-        self.table_karty_hraci.setSortingEnabled(True)
         item = self.table_karty_hraci.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "Karty"))
         item = self.table_karty_hraci.horizontalHeaderItem(1)
