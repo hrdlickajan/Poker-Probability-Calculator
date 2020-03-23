@@ -556,21 +556,21 @@ class Ui_MainWindow(object):
         if not obrazek_dialog:
             return
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.smazTabulku(self.table_karty_stul)
-        self.smazTabulku(self.table_karty_hraci)
         self.label.setPixmap(QtGui.QPixmap(obrazek_dialog))
         self.label.setScaledContents(True)
         self.snimek = Snimek(obrazek_dialog)
+        self.smazTabulku(self.table_karty_stul)
+        self.smazTabulku(self.table_karty_hraci)
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def generujObrazek(self):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        self.smazTabulku(self.table_karty_stul)
-        self.smazTabulku(self.table_karty_hraci)
         generator_stul.main()  # skript ulozi obrazek do "stul_temp.png"
         self.snimek = Snimek("stul_temp.png")
         self.label.setPixmap(QtGui.QPixmap("stul_temp.png"))
         self.label.setScaledContents(True)
+        self.smazTabulku(self.table_karty_stul)
+        self.smazTabulku(self.table_karty_hraci)
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def setupUi(self, MainWindow):
