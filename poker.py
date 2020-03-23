@@ -449,6 +449,7 @@ class Ui_MainWindow(object):
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def smazTabulku(self, table):
+        self.MainWindow.resize(1005, 580)
         table.setRowCount(0)
 
     def rozpoznejKarty(self):
@@ -532,6 +533,7 @@ class Ui_MainWindow(object):
                                            QtWidgets.QTableWidgetItem(item))
         self.table_karty_hraci.setSortingEnabled(False)
         QtWidgets.QApplication.restoreOverrideCursor()
+        MainWindow.resize(1005, 660+30*(self.snimek.pocet_hracu+1))
 
     def nactiSit(self):
         sit_dialog = QFileDialog.getExistingDirectory(
@@ -574,7 +576,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
-        MainWindow.resize(1005, 846)
+        MainWindow.resize(1005, 580)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -701,6 +703,7 @@ class Ui_MainWindow(object):
             self.spoctiPpsti)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.MainWindow = MainWindow
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
