@@ -1,12 +1,16 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'gui2.ui'
-#
-# Created by: PyQt5 UI code generator 5.13.0
-#
-# WARNING! All changes made in this file will be lost!
-
-
+'''
+GUI pro identifikaci pokerovych karet a spocitani pravdepodobnosti vyher a
+remiz. Testovany obrazek lze bud generovat ze skriptu generator_stul.py nebo
+ho lze nacist z realnych fotek
+pokud byl tento skript naklonovan z githubu, realny fotky stolu jsou ve slozce
+"obrazky".
+Mozne pouzit:
+1. Nacti neuronovou sit - sit_final sety je moje stavajici sit
+2. Generuj/nacti/nech stavajici obrazek
+3. Rozpoznej karty
+4. Spocitej pravdepodobnosti - muze nejakou dobu trvat kvuli provadenym
+simulacim
+'''
 import scipy.ndimage as ndimage
 from skimage import img_as_ubyte
 import cv2
@@ -23,17 +27,19 @@ import tensorflow as tf
 import numpy as np
 import itertools
 import generator_stul
+import sys
 
-barvy_dict = {"S": "♠", "C": "♣", "H": "♥", "D": "♦"}
-hodnoty = list(range(2, 15))
-barvy = ["C", "S", "H", "D"]
-kombinace = set()
+barvy_dict = {"S": "♠", "C": "♣", "H": "♥", "D": "♦"}  # mapovani barev
+hodnoty = list(range(2, 15))  # ciselne hodnoty karet eso - 14, kral - 13...
+barvy = ["C", "S", "H", "D"]  # anglicke nazvy barev
+kombinace = set()  # vsechny kombinace karet - celkem 52
 for barva in barvy:
     for hodnota in hodnoty:
         kombinace.add(str(hodnota) + barva)
+# temito barvami budou konturovany karty + hraci maji tyto barvy v tabulce gui
 barvy_hracu = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (0, 255, 255),
                (255, 0, 255), (255, 255, 0)]
-barva_stul = (125, 125, 125)
+barva_stul = (125, 125, 125)  # barva kontur community karet
 font = QtGui.QFont("Times", 10, QtGui.QFont.Bold)
 
 
@@ -55,6 +61,7 @@ class Ruka:
         self.flush = len(ruka) == 1
         return self.flush
 
+# po sobe jdouci hodnoty
     def zkontrolujStraight(self):
         ruka = set(self.hodnoty)
         pet_ruznych_hodnot = len(ruka) == len(self.hodnoty)
@@ -62,21 +69,24 @@ class Ruka:
         self.straight = pet_ruznych_hodnot and po_sobe_jdouci
         return self.straight or ruka == set([2, 3, 4, 5, 14])  # 14 - eso
 
-    def zkontrolujOpakovaniHodnoty(self):  # par, trojice, ctverice
-        # spocita kolikrat se kazdy element vyskytuje v dane ruce
+# tvori kombinace karet par? trojici? ctverici? fullhouse? 2 pary?
+    def zkontrolujOpakovaniHodnoty(self):
+        # kolikrat se hodnota vyskytuje v dane ruce
         suma = sum(self.hodnoty.count(r) for r in self.hodnoty)
-        # 5 karet - 5 cisel, cislo - kolikrat se hodnota vyskytuje v ruce
-        self.ctverice = suma == 17
-        self.full_house = suma == 13
-        self.trojice = suma == 11
-        self.dva_pary = suma == 9
-        self.par = suma == 7
+        # priklad: kombinace hodnot karet 5 5 3 10 5
+        # pole count pred sumou: [3, 3, 1, 1, 3], suma pole = 11 => trojice
+        self.ctverice = suma == 17  # 4 + 4 + 4 + 4 + 1
+        self.full_house = suma == 13  # 3 + 3 + 3 + 2 + 2
+        self.trojice = suma == 11  # 3 + 3 + 3 + 1 + 1
+        self.dva_pary = suma == 9  # 2 + 2 + 2 + 2 + 1
+        self.par = suma == 7  # 2 + 2 + 1 + 1 + 1
 
+# sila ruky
     def vyhodnotSilu(self):
         if self.straight and self.flush and self.nejvyssiHodnota == 14:
-            self.sila = 9
+            self.sila = 9  # royal flush
         elif self.straight and self.flush:
-            self.sila = 9
+            self.sila = 9  # straight flush
         elif self.ctverice:
             self.sila = 8
         elif self.full_house:
@@ -92,7 +102,7 @@ class Ruka:
         elif self.par:
             self.sila = 2
         else:
-            self.sila = 1
+            self.sila = 1  # high card
 
 
 class Hrac:
@@ -120,6 +130,7 @@ class Hrac:
             ruka.vyhodnotSilu()
             self.ruce.append(ruka)
 
+        # nejlepsi mozna kombinace karet
         self.nejlepsiRuka = sorted(self.ruce,
                                    key=lambda ruka: (ruka.sila,
                                                      ruka.nejvyssiHodnota,
@@ -145,11 +156,10 @@ class Sit:
         self.key_list = list(poradi.keys())
         self.val_list = list(poradi.values())
 
+    # klasifikuj kartu
     def klasifikuj(self, karta):
         prediction = self.sit.predict(karta.karta_sit)
-        # print(np.argmax(prediction), max(max(prediction)), prediction)
         vysledek = self.key_list[self.val_list.index(np.argmax(prediction))]
-        # vysledek = prediction.argmax(axis=-1)
         karta.vysledek = vysledek
         if vysledek == "pozadi":
             karta.barva = "X"
@@ -180,12 +190,9 @@ class Snimek:
         self.props = skimage.measure.regionprops(self.labely + 1)
         self.nastavPrah()
 
-    def nastavPrah(self):  # todo udelat lip?
-        # obsahy = []
-        # for i in range(1, np.max(self.labely)):
-        #     obsahy.append(self.props[i].area)
-        # self.prah = sorted(obsahy)[-13]
-        self.prah = 30000
+    # nastaveni prahu obsahu pro regionprops
+    def nastavPrah(self):
+        self.prah = 30000  # tohle jde asi udelat lip, ale funguje to
 
     # zkontroluje obsah labelu a pokud je obsah dostatecny, jedna se o kartu
     def ziskejKarty(self):
@@ -198,11 +205,9 @@ class Snimek:
                                self))
         self.karty = karty
 
+    # validace obsahu labelu
     def validaceRegionu(self, area):
-        if area < self.prah:
-            return False
-        else:
-            return True
+        return area > self.prah
 
     # validuj spravne nacteni snimku
     def validaceCesty(self):
@@ -212,23 +217,25 @@ class Snimek:
         stredy_y = []
         stredy_x = []
         self.hraci = []
-        self.pouzitelne_karty_stul = []
+        self.pouzitelne_karty_stul = []  # z techto karet budou pocitany ppsti
         self.pocet_karet = len(self.karty)
         self.pocet_hracu = (self.pocet_karet - 5)/2
-        # serad karty podle jejich vysky
+        # serad karty podle jejich vysky ve snimku
         karty_serazene = sorted(self.karty, key=lambda karta: karta.y)
         for karta in karty_serazene:
             if karta.vysledek != "pozadi":
                 dostupne_karty.remove(str(karta.hodnotaNum) + karta.barva)
             stredy_y.append(karta.y)
             stredy_x.append(karta.x)
-        dif = np.diff(stredy_y)
+        dif = np.diff(stredy_y)  # rozdil serazenych stredu karet
         posledni_horni = np.where(abs(dif) > 500)[0][0]
         horni_karty = karty_serazene[:posledni_horni+1]
         karty_stul = karty_serazene[posledni_horni+1:posledni_horni+6]
         dolni_karty = karty_serazene[posledni_horni+6:]
+        # serazeni podle relativni sirky
         self.horni_karty = sorted(horni_karty, key=lambda karta: karta.x)
         self.karty_stul = sorted(karty_stul, key=lambda karta: karta.x)
+        # zakryte karty jsou nalevo a ne napravo - otoc poradi karet
         if (self.karty_stul[0].vysledek == "pozadi" and
                 self.karty_stul[-1].vysledek != "pozadi"):
             self.karty_stul.reverse()
@@ -250,6 +257,7 @@ class Snimek:
         j = 1
         poradi = 1
         hrac_id = 1
+        # prirazeni karet hracum
         for karta in self.horni_karty + self.dolni_karty:
             if i % 2 == 0:
                 hrac = Hrac(hrac_id)
@@ -276,6 +284,7 @@ class Snimek:
             j += 1
             poradi += 1
 
+    # vypis karet na stole
     def vypis(self):
         karty = sorted(self.karty, key=lambda karta: karta.poradi)
         for karta in karty:
@@ -289,13 +298,12 @@ class Karta:
         self.y = stred[0]
         self.x = stred[1]
 
-    # ulozi kartu do slozky 'karty' s nazvem snimku v jejim jmenu
     def najdiKontury(self):  # nakresli kontury kolem oblasti
         self.kontury, _ = cv2.findContours(self.img, cv2.RETR_EXTERNAL,
                                            cv2.CHAIN_APPROX_TC89_L1)
         cv2.drawContours(self.img, self.kontury, -1, (255, 0, 0), 1)
 
-    def barevneKontury(self, barva):
+    def barevneKontury(self, barva):  # pro barevne rozliseni hracu
         (r, g, b) = barva
         barva = (b, g, r)
         self.kontury, _ = cv2.findContours(self.img, cv2.RETR_EXTERNAL,
@@ -341,7 +349,7 @@ class Karta:
         try:
             x0, y0 = souradnice.min(axis=0)
             x1, y1 = souradnice.max(axis=0)
-        except ValueError:  # nastane pokud `y` je 0.
+        except ValueError:  # nastane pokud `y` je 0, nevim proc
             pass
 
         self.orezana_karta = self.otocenySnimek[x0:x1, y0:y1]
@@ -350,11 +358,11 @@ class Karta:
         if vyska_karty < sirka_karty:
             self.orezana_karta = np.rot90(self.orezana_karta)
 
-    def upravRozmer(self):
+    def upravRozmer(self):  # resize karty
         karta_sit = cv2.resize(self.orezana_karta, (150, 200),
                                interpolation=cv2.INTER_CUBIC)
         karta_sit = cv2.cvtColor(karta_sit, cv2.COLOR_BGR2RGB)
-        # x = karta_sit.img_to_array(karta_sit)
+        # pripraveni karty pro sit
         self.karta_sit = np.expand_dims(karta_sit.astype(float), axis=0)
         self.karta_sit = self.karta_sit/255
 
@@ -366,8 +374,11 @@ class Karta:
             self.hodnotaNum = hodnoty_dict[self.hodnota]
 
 
+# tato trida je castecne generovana pomoci programu qt designer, kde bylo
+# vytvoreno gui
 class Ui_MainWindow(object):
-    def spoctiPpsti(self):
+    def spoctiPpsti(self):  # spocti ppsti na vyhru/remizu vsech hracu na stole
+        # validace nacteni vsech potrebnych atributu
         if hasattr(self, 'snimek'):
             if not hasattr(self.snimek, 'pocet_karet_pozadi'):
                 return
@@ -383,10 +394,9 @@ class Ui_MainWindow(object):
         # vsechny karty jsou odkryty - staci vyhodnotit
         if self.snimek.pocet_karet_pozadi == 0:
             pocet_simulaci = 1
-        # river
-        elif self.snimek.pocet_karet_pozadi == 1:
+        elif self.snimek.pocet_karet_pozadi == 1:  # river
             pocet_simulaci = 5000
-        else:
+        else:  # turn
             pocet_simulaci = 20000
         for hrac in self.snimek.hraci:  # inicializace poctu her
             hrac.pocet_vyher = 0
@@ -402,6 +412,7 @@ class Ui_MainWindow(object):
                 kombinace_stul.remove(karta)
                 karty_na_stole.append(karta)
 
+            # vyhodnoceni nejlepsich kombinaci pro jednotlive hrace
             for hrac in self.snimek.hraci:
                 hrac.karty_na_stole = karty_na_stole
                 hrac.vyhodnotRuce()
@@ -425,6 +436,7 @@ class Ui_MainWindow(object):
             else:
                 vyherce.pocet_vyher += 1
 
+        # vypis pravdepodobnosti
         for hrac in self.snimek.hraci:
             item = QtWidgets.QTableWidgetItem()
             pocet_vyher = round(100*hrac.pocet_vyher/pocet_simulaci, 2)
@@ -445,6 +457,7 @@ class Ui_MainWindow(object):
             self.table_karty_hraci.setItem(hrac.id-1, 2,
                                            QtWidgets.QTableWidgetItem(item))
         self.table_karty_hraci.setSortingEnabled(True)
+        # sort podle nejvyssi ppsti
         self.table_karty_hraci.sortByColumn(1, QtCore.Qt.DescendingOrder)
         QtWidgets.QApplication.restoreOverrideCursor()
 
@@ -453,6 +466,7 @@ class Ui_MainWindow(object):
         table.setRowCount(0)
 
     def rozpoznejKarty(self):
+        # validace potrebnych atributu
         if hasattr(self, 'sit'):
             if not self.sit.sit_nactena:
                 return
@@ -476,11 +490,14 @@ class Ui_MainWindow(object):
             karta.upravRozmer()
             self.sit.klasifikuj(karta)
         self.snimek.zaradKarty()
+        # kontury community karet
         for karta in self.snimek.karty_stul:
             karta.barevneKontury(barva_stul)
+        # kontury barevne podle toho o jakeho hrace se jedna
         for hrac in self.snimek.hraci:
             for karta in hrac.karty:
                 karta.barevneKontury(hrac.barva)
+        # vizualizace obrazku v gui
         img_temp = cv2.cvtColor(self.snimek.kontury, cv2.COLOR_BGR2RGB)
         height, width, channel = img_temp.shape
         bytesPerLine = 3 * width
@@ -490,7 +507,7 @@ class Ui_MainWindow(object):
         self.label.setScaledContents(True)
 
         self.table_karty_stul.insertRow(0)
-
+        # vypis do tabulek
         popis_temp = ""
         for karta in self.snimek.karty_stul:
             if karta.vysledek == "pozadi":
@@ -533,9 +550,10 @@ class Ui_MainWindow(object):
                                            QtWidgets.QTableWidgetItem(item))
         self.table_karty_hraci.setSortingEnabled(False)
         QtWidgets.QApplication.restoreOverrideCursor()
+        # resize podle poctu hracu
         MainWindow.resize(1005, 660+30*(self.snimek.pocet_hracu+1))
 
-    def nactiSit(self):
+    def nactiSit(self):  # nacteni NS ze slozky
         sit_dialog = QFileDialog.getExistingDirectory(
             None, "Vyber složku", os.getcwd())
         if not sit_dialog:
@@ -550,12 +568,13 @@ class Ui_MainWindow(object):
             else:
                 self.statusBar.showMessage("Síť nenačtena")
 
-    def nactiObrazek(self):
+    def nactiObrazek(self):  # nacteni realneho obrazku
         obrazek_dialog, _filter = QFileDialog.getOpenFileName(
             None, "Vyber obrázek", None, filter='Obrázky (*.png *.jpeg *.jpg)')
         if not obrazek_dialog:
             return
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        # vizualizace v gui
         self.label.setPixmap(QtGui.QPixmap(obrazek_dialog))
         self.label.setScaledContents(True)
         self.snimek = Snimek(obrazek_dialog)
@@ -566,6 +585,7 @@ class Ui_MainWindow(object):
     def generujObrazek(self):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         generator_stul.main()  # skript ulozi obrazek do "stul_temp.png"
+        # vizualizace v gui
         self.snimek = Snimek("stul_temp.png")
         self.label.setPixmap(QtGui.QPixmap("stul_temp.png"))
         self.label.setScaledContents(True)
@@ -573,7 +593,7 @@ class Ui_MainWindow(object):
         self.smazTabulku(self.table_karty_hraci)
         QtWidgets.QApplication.restoreOverrideCursor()
 
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow):  # generovano z .ui souboru
         MainWindow.setObjectName("MainWindow")
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
         MainWindow.resize(1005, 580)
@@ -705,7 +725,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.MainWindow = MainWindow
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, MainWindow):  # generovano z .ui souboru
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Poker"))
         item = self.table_karty_hraci.horizontalHeaderItem(0)
@@ -744,11 +764,10 @@ class Ui_MainWindow(object):
 
 
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
-    app.setStyleSheet(qdarkstyle.load_stylesheet())
+    app.setStyleSheet(qdarkstyle.load_stylesheet())  # tmavy styl GUI
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())

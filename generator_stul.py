@@ -1,20 +1,20 @@
+'''
+Skript generuje hraci stul s moznosti ulozit jednotlive karty
+stul je generovan nahodne ze 3 setu karet a s nahodnym poctem hracu 2-6
+Nahodny je taktez stav hry: Pre-flop, flop, turn nebo river
+'''
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
-# from PIL import ImageTk
 import itertools
 import os
 import random
 
-
+# fonty pro nadpisy cisel/pismen v kartach
 font_cesta = 'fonts/pismo.TTF'
 font_cesta2 = 'fonts/pismo2.ttf'
-barvy = ['S', 'H', 'D', 'C']
-souradnice = [[100, 300], [100, 2200], [2900, 300],
-              [2900, 2200], [1600, 300], [1600, 2200]]
-souradnice_pole = [[100, 300], [100, 2200], [2900, 300],
-                   [2900, 2200], [1600, 300], [1600, 2200]]
-cerne_barvy = ['S', 'C']
+barvy = ['S', 'H', 'D', 'C']  # S - piky, H - srdce, D - kary, C - krize
+cerne_barvy = ['S', 'C']  # font bude pro tyto barvy cerny
 hodnoty = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 hodnoty_s_obrazkem = ['J', 'Q', 'K']
 slozka_obrazky = 'obrazky_ke_kartam/'
@@ -43,10 +43,10 @@ class Font:
         self.hodnota_karty = hodnota_karty
         # barva pisma se ridi podle barvy/znaku
         if barva_karty in cerne_barvy:
-            self.barva = (0, 0, 0)
+            self.barva = (0, 0, 0)  # cerna barva fontu pro cerne karty
         else:
-            self.barva = (255, 0, 0)
-
+            self.barva = (255, 0, 0)  # cervena pro cervene karty
+        # 10 je jedina dvouciferna hodnota a potrebuje upravit rozmer fontu
         if hodnota_karty == '10':
             self.font = ImageFont.truetype(font_cesta2, 100)
         else:
@@ -65,7 +65,7 @@ class Karta:
         self.rotace = rotace
         self.barva = barva
         if karty_set in [2, 3] or hodnota == 'pozadi':
-            return
+            return  # set 2 a 3 a pozadi karet jsou generovany vlozenim obrazku
         if self.hodnota in ['Q', 'K']:
             self.offset_pismo_x = 25
             self.offset_pismo_x_P = self.original_x - 85
@@ -94,12 +94,15 @@ class Karta:
 
         self.obrazek_x = self.original_x-186
         self.obrazek_y = self.original_y-166
+        # nahrani krizu, piku, karu nebo srdci jako obrazku
         self.barva_img = Image.open(cesta_barva).resize((self.barva_x,
                                                          self.barva_y),
                                                         Image.ANTIALIAS)
+        # vzor je jinak veliky pro karty J, Q, K
         self.barva_img_JQK = Image.open(cesta_barva).resize((self.barva_JQK_x,
                                                              self.barva_JQK_y),
                                                             Image.ANTIALIAS)
+        # vzor pod hodnotou karty
         self.barva_img_mensi = self.barva_img.resize((self.barva_mala_x,
                                                       self.barva_mala_y),
                                                      Image.ANTIALIAS)
@@ -114,19 +117,20 @@ class Karta:
 
     # zaobleni rohy karty
     def zaobliRohy(self):
-        w = self.original_x
-        h = self.original_y
+        w = self.original_x  # sirka
+        h = self.original_y  # vyska
         rad = 40  # radius
         circle = Image.new('L', (rad * 2, rad * 2), 0)
         draw = ImageDraw.Draw(circle)
         draw.ellipse((0, 0, rad * 2, rad * 2), fill=255)
+        # vlozeni obrazku do elipsy
         alpha = Image.new('L', (w, h), 255)
         alpha.paste(circle.crop((0, 0, rad, rad)), (0, 0))
         alpha.paste(circle.crop((0, rad, rad, rad * 2)), (0, h - rad))
         alpha.paste(circle.crop((rad, 0, rad * 2, rad)), (w - rad, 0))
         alpha.paste(circle.crop((rad, rad, rad * 2, rad * 2)),
                     (w - rad, h - rad))
-        self.img.putalpha(alpha)
+        self.img.putalpha(alpha)  # obrazek je ted RGBA
 
     # nacteni JQK obrazku pro vlozeni
     def nacteniObrazku(self):
@@ -226,6 +230,7 @@ class Karta:
 
     def vykresleniJednohoZnaku(self, x, y):
         if self.hodnota not in ['J', 'Q', 'K']:
+            # znak je mensi pro J, Q, K
             self.img.paste(self.barva_img, (x, y, x + self.barva_x, y
                                             + self.barva_y))
         else:
@@ -243,8 +248,8 @@ class Karta:
         rot = self.img.rotate(self.rotace,
                               expand=1).resize(rotated_temp.size)
         self.rotated.paste(rot, (0, 0), rot)
-        # self.rotated.save('test2.png')
 
+    #  ulozi kartu
     def uloz(self):
         self.resized.save(self.cesta)
 
@@ -270,7 +275,7 @@ def vytvorKartu(hodnota, barva, sirka, vyska, rotace, cesta_karta, karty_set):
     font = Font(barva, hodnota)
     karta = Karta(hodnota, barva, cesta_barva, vyska, sirka, rotace,
                   cesta_karta, font, karty_set)
-    if karty_set in [2, 3]:
+    if karty_set in [2, 3]:  # karty ze setu 2, 3 jsou obrazky
         cesta = str(karty_set) + '/' + barva + hodnota + '.png'
         karta.img = Image.open(cesta)
 
@@ -278,10 +283,9 @@ def vytvorKartu(hodnota, barva, sirka, vyska, rotace, cesta_karta, karty_set):
         karta.rotuj()
 
         return karta.rotated
-    else:
+    else:  # vytvoreni synteticke karty ze setu 1
         if hodnota in hodnoty_s_obrazkem:
             karta.vykresleniObrazku()
-
         karta.vykresleni()
         karta.vykresleniOkraju()
         karta.zaobliRohy()
@@ -293,7 +297,7 @@ def vytvorKartu(hodnota, barva, sirka, vyska, rotace, cesta_karta, karty_set):
 
 
 def nactiKartu(rotace, karty_set):
-    global karty_na_stole
+    global karty_na_stole  # pole se vsemi kartami, ktere se na stole nachazi
     barva = random.choice(barvy)
     hodnota = random.choice(hodnoty)
     nazev = barva + hodnota
@@ -306,6 +310,7 @@ def nactiKartu(rotace, karty_set):
         return None
 
 
+# nacte obrazek pozadi, resizuje, zaobli rohy a zarotuje kartu
 def nactiPozadi(rotace, karty_set):
     karta = Karta('pozadi', None, None, 378, 528, rotace,
                   None, None, karty_set)
@@ -335,11 +340,13 @@ class Stul:
         else:
             self.pocet_odkrytych_karet = 5
 
+    # vygeneruje karty na stole (community cards)
     def vygenerujFlopRiverTurn(self):
         souradnice_flop_pole = [[650, 1200], [1200, 1200], [1750, 1200],
                                 [2300, 1200], [2850, 1200]]
         i = 0
         while len(self.flop_karty) < 5:
+            # nahodna rotace karet
             self.flop_rotace = random.randrange(-15, 15, 1)
             souradnice_flop = souradnice_flop_pole[i]
             karta = nactiKartu(self.flop_rotace, self.karty_set)
@@ -353,9 +360,11 @@ class Stul:
                 self.pridej(karta, souradnice_flop)
                 i += 1
 
+    # prida kartu do snimku stolu
     def pridej(self, img, souradnice):
         self.img.paste(img, souradnice)
 
+    # ulozi obrazek stolu
     def uloz(self):
         self.img.save(self.cesta)
 
@@ -364,6 +373,7 @@ class Hrac:
     _ids = itertools.count(1)
 
     def __init__(self, karty_set, pocet_hracu, id):
+        # v techto souradnicich budou vygenerovany karty, 1 element - 1 hrac
         souradnice_pole = [[100, 300], [100, 2200], [2900, 300],
                            [2900, 2200], [1600, 300], [1600, 2200]]
         self.id = id  # next(self._ids)
@@ -379,6 +389,7 @@ class Hrac:
             if karta:
                 self.karty.append(karta)
 
+    # slouci karty do jednoho obrazku
     def slucKarty(self):
         self.img = Image.new('RGB', (self.karty[0].width +
                                      self.karty[1].width+40,
