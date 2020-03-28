@@ -183,7 +183,7 @@ class Snimek:
     def segmentace(self):
         prah = threshold_otsu(self.gray)
         self.segmentovany = self.gray > prah
-        imgEr = ndimage.binary_erosion(self.segmentovany,
+        imgEr = ndimage.binary_closing(self.segmentovany,
                                        iterations=1).astype(np.int)
         # self.labely = skimage.measure.label(img_gray_thresh, background=0)
         self.labely = skimage.measure.label(imgEr, background=0)
