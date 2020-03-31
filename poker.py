@@ -243,7 +243,7 @@ class Snimek:
         self.pocet_karet_pozadi = sum(k.vysledek == "pozadi" for k in
                                       self.karty_stul)
         if self.pocet_karet_pozadi == 5:
-            self.stav_hry = "PreFlop"
+            self.stav_hry = "Pre-Flop"
         elif self.pocet_karet_pozadi == 2:
             self.stav_hry = "Flop"
         elif self.pocet_karet_pozadi == 1:
@@ -251,7 +251,7 @@ class Snimek:
         elif self.pocet_karet_pozadi == 0:
             self.stav_hry = "River"
         else:
-            self.stav_hry = "Neznamy"
+            self.stav_hry = "N/A"
         self.dolni_karty = sorted(dolni_karty, key=lambda karta: karta.x)
         i = 0
         j = 1
@@ -549,6 +549,7 @@ class Ui_MainWindow(object):
             self.table_karty_hraci.setItem(hrac.id-1, 0,
                                            QtWidgets.QTableWidgetItem(item))
         self.table_karty_hraci.setSortingEnabled(False)
+        self.statusBar.showMessage("Stav hry: " + self.snimek.stav_hry)
         QtWidgets.QApplication.restoreOverrideCursor()
         # resize podle poctu hracu
         MainWindow.resize(1005, 660+30*(self.snimek.pocet_hracu+1))
@@ -562,11 +563,8 @@ class Ui_MainWindow(object):
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             self.sit = Sit(sit_dialog)
         finally:
+            self.updateStatusBar()
             QtWidgets.QApplication.restoreOverrideCursor()
-            if self.sit.sit_nactena:
-                self.statusBar.showMessage("Síť načtena")
-            else:
-                self.statusBar.showMessage("Síť nenačtena")
 
     def nactiObrazek(self):  # nacteni realneho obrazku
         obrazek_dialog, _filter = QFileDialog.getOpenFileName(
@@ -580,7 +578,14 @@ class Ui_MainWindow(object):
         self.snimek = Snimek(obrazek_dialog)
         self.smazTabulku(self.table_karty_stul)
         self.smazTabulku(self.table_karty_hraci)
+        self.updateStatusBar()
         QtWidgets.QApplication.restoreOverrideCursor()
+
+    def updateStatusBar(self):
+        if self.sit.sit_nactena:
+            self.statusBar.showMessage("Síť načtena")
+        else:
+            self.statusBar.showMessage("Síť nenačtena")
 
     def generujObrazek(self):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -591,6 +596,7 @@ class Ui_MainWindow(object):
         self.label.setScaledContents(True)
         self.smazTabulku(self.table_karty_stul)
         self.smazTabulku(self.table_karty_hraci)
+        self.updateStatusBar()
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def setupUi(self, MainWindow):  # generovano z .ui souboru
