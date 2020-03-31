@@ -582,6 +582,8 @@ class Ui_MainWindow(object):
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def updateStatusBar(self):
+        if not hasattr(self, 'sit'):
+            return
         if self.sit.sit_nactena:
             self.statusBar.showMessage("Síť načtena")
         else:
