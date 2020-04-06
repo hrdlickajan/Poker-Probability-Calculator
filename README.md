@@ -1,5 +1,5 @@
 # Diplomová práce
-Zpracováno v Python 3. Repositář obsahuje GUI pro detekci pokerových karet a počítání pravděpodobností hráčů na výhru. 
+Zpracováno v Python 3. Repozitář obsahuje GUI pro detekci pokerových karet a počítání pravděpodobností hráčů na výhru. 
 Lze vygenerovat obrázek ze syntetických dat, která jsou tvořena ze 3 setů.
 
 <p align="center"> 
@@ -20,4 +20,5 @@ Stáhnout a rozbalit/klonovat tento repozitář
 3. lze buď načíst reálný obrázek stolu pomocí tlačítka "Načti obrázek" (vzorové obrázky stolu jsou ve složce "obrazky")
 4. nebo generovat náhodný syntetický obrázek tlačítkem "Generuj náhodný obrázek"
 5. Tlačítko "Rozpoznej karty" identifikuje pokerové karty a přiřadí je hráčům
-6. "Spočti pravděpodobnosti" provede několik simulací pokerových her a vypíše pravděpodobnosti výhry/remízy pro každého hráče
+6. "Odkryj karty" vygeneruje místo otočených karet na stole náhodnou hrací kartu
+7. "Spočti pravděpodobnosti" provede několik simulací pokerových her a vypíše pravděpodobnosti výhry/remízy pro každého hráče
