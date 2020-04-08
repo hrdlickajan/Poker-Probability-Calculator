@@ -671,6 +671,7 @@ class Ui_MainWindow(object):
         self.label.setScaledContents(True)
         self.statusBar.showMessage("Stav hry: " + self.snimek.stav_hry)
         self.vymazPpsti()
+        self.spoctiPpsti()
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def rozpoznejKarty(self):
