@@ -512,11 +512,10 @@ class Ui_MainWindow(object):
             remiza = False
             kombinace_stul = dostupne_karty.copy()
             # generace nahodnych karet misto karet s pozadim
-            for i in range(0, 5 - len(self.snimek.pouzitelne_karty_stul)):
+            for i in range(0, 5 - len(karty_na_stole)):
                 karta = random.sample(kombinace_stul, 1)[0]
                 kombinace_stul.remove(karta)
                 karty_na_stole.append(karta)
-
             # vyhodnoceni nejlepsich kombinaci pro jednotlive hrace
             for hrac in self.snimek.hraci:
                 hrac.karty_na_stole = karty_na_stole
