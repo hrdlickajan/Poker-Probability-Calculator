@@ -4,6 +4,10 @@ Made in Python 3 for Texas Hold'em poker
 Application input: Image of poker table <br />
 Application output: Probabilities of win/draw for each player
 
+<p align="center"> 
+<img src="https://raw.githubusercontent.com/hrdlickajan/DP/master/img/vzor.PNG">
+</p>
+
 This repository contains GUI that:
 * Can generate synthetic poker tables with random number of players with random cards
 * Detects and identifies all poker cards on the table with a trained CNN included in this repository
@@ -11,9 +15,6 @@ This repository contains GUI that:
 * Computes probability of win/draw for each player with Monte-Carlo simulations
 * Simulates next game state
 
-<p align="center"> 
-<img src="https://raw.githubusercontent.com/hrdlickajan/DP/master/img/vzor.PNG">
-</p>
 
 ### Install
 All used libraries are specified in file requirements.txt
