@@ -1,4 +1,7 @@
-# Diplomová práce
+# Poker probability calculator
+This repository contains GUI that:
++ 
++ 
 Zpracováno v Python 3. Repozitář obsahuje GUI pro detekci pokerových karet a počítání pravděpodobností hráčů na výhru. 
 Lze vygenerovat obrázek ze syntetických dat, která jsou tvořena ze 3 setů.
 
