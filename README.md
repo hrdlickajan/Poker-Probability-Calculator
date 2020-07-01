@@ -1,9 +1,13 @@
 # Poker probability calculator
+Works for Hold'em version
+Input: image of poker table
+Output: Probabilities of win/draw for each player
 This repository contains GUI that:
-+ 
-+ 
-Zpracováno v Python 3. Repozitář obsahuje GUI pro detekci pokerových karet a počítání pravděpodobností hráčů na výhru. 
-Lze vygenerovat obrázek ze syntetických dat, která jsou tvořena ze 3 setů.
+* Can generate synthetic poker tables with random number of players
+* Detects and identifies all poker cards on the table with a trained CNN
+* Analyses the state of the game; which player has which cards
+* Computes probability of win/draw for each player with Monte-Carlo simulations
+* Simulates next game state
 
 <p align="center"> 
 <img src="https://raw.githubusercontent.com/hrdlickajan/DP/master/img/vzor.PNG">
