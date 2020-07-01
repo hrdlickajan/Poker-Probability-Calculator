@@ -2,6 +2,7 @@
 Made in Python 3 for Texas Hold'em poker
 
 Application input: Image of poker table
+
 Application output: Probabilities of win/draw for each player
 
 This repository contains GUI that:
