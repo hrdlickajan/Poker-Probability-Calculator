@@ -23,7 +23,7 @@ pip install -r requirements.txt
 ```
 
 ### Usage
-1. run poker.py
+1. Run poker.py from this repository
 2. Button "Load net" - choose folder CNN-cards to load neural network to classify cards
 3. Button "Load image" - loads any image and displays it in GUI, some sample images with poker tables are in the folder "sample_images"
 4. Button "Generate random image" - generates a synthetic poker image with random cards and random player count
