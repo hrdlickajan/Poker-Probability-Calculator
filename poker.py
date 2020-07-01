@@ -668,7 +668,7 @@ class Ui_MainWindow(object):
                            bytesPerLine, QtGui.QImage.Format_RGB888)
         self.label.setPixmap(QtGui.QPixmap(img))
         self.label.setScaledContents(True)
-        self.statusBar.showMessage("Stav hry: " + self.snimek.stav_hry)
+        self.statusBar.showMessage("Game state: " + self.snimek.stav_hry)
         self.vymazPpsti()
         self.spoctiPpsti()
         QtWidgets.QApplication.restoreOverrideCursor()
@@ -762,7 +762,7 @@ class Ui_MainWindow(object):
             self.table_karty_hraci.setItem(hrac.id, 3,
                                            QtWidgets.QTableWidgetItem(item))
         self.table_karty_hraci.setSortingEnabled(False)
-        self.statusBar.showMessage("Stav hry: " + self.snimek.stav_hry)
+        self.statusBar.showMessage("Game state: " + self.snimek.stav_hry)
         QtWidgets.QApplication.restoreOverrideCursor()
         # resize podle poctu hracu
         MainWindow.resize(1005, 660+30*(self.snimek.pocet_hracu+1))
@@ -800,9 +800,9 @@ class Ui_MainWindow(object):
         if not hasattr(self, 'sit'):
             return
         if self.sit.sit_nactena:
-            self.statusBar.showMessage("Síť načtena")
+            self.statusBar.showMessage("CNN loaded succesfully")
         else:
-            self.statusBar.showMessage("Síť nenačtena")
+            self.statusBar.showMessage("CNN not loaded - load a valid CNN")
 
     def generujObrazek(self):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -956,7 +956,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.action_rozpoznej_karty)
         self.toolBar.addAction(self.action_odkryj_karty)
         self.toolBar.addAction(self.action_spocti_pravdepodobnosti)
-        self.statusBar.showMessage("Načti síť")
+        self.statusBar.showMessage("Load net")
         self.action_nacti_sit.triggered.connect(self.nactiSit)
         self.action_nacti_obrazek.triggered.connect(self.nactiObrazek)
         self.action_generuj_obrazek.triggered.connect(self.generujObrazek)
@@ -972,11 +972,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Poker"))
         item = self.table_karty_hraci.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "Karty"))
+        item.setText(_translate("MainWindow", "Cards"))
         item = self.table_karty_hraci.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "Pravděpodobnost výhry [%]"))
+        item.setText(_translate("MainWindow", "Win probability [%]"))
         item = self.table_karty_hraci.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "Pravděpodobnost remízy [%]"))
+        item.setText(_translate("MainWindow", "Draw probability [%]"))
         self.table_karty_hraci.setColumnHidden(3, True)
         self.table_karty_stul.setSortingEnabled(True)
         item = self.table_karty_stul.horizontalHeaderItem(0)
@@ -986,29 +986,31 @@ class Ui_MainWindow(object):
         item = self.table_karty_stul.horizontalHeaderItem(2)
         item.setText(_translate("MainWindow", "River"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
-        self.action_nacti_sit.setText(_translate("MainWindow", "Načti síť"))
+        self.action_nacti_sit.setText(_translate("MainWindow", "Load net"))
         self.action_nacti_sit.setToolTip(_translate(
-            "MainWindow", "Načte neuronovou síť pro klasifikaci karet"))
+            "MainWindow", "choose the folder CNN-cards"))
         self.action_nacti_obrazek.setText(
-            _translate("MainWindow", "Načti obrázek"))
+            _translate("MainWindow", "Load image"))
         self.action_nacti_obrazek.setToolTip(
-            _translate("MainWindow", "Načte obrázek z počítače"))
+            _translate("MainWindow", "Some sample images are in the folder "
+                       + "\"sample_images\""))
         self.action_generuj_obrazek.setText(
-            _translate("MainWindow", "Generuj náhodný obrázek"))
+            _translate("MainWindow", "Generate random image"))
         self.action_generuj_obrazek.setToolTip(
-            _translate("MainWindow", "Generuje syntetický obrázek"))
+            _translate("MainWindow", "Synthetic random image"))
         self.action_rozpoznej_karty.setText(
-            _translate("MainWindow", "Rozpoznej karty"))
+            _translate("MainWindow", "Identify"))
         self.action_rozpoznej_karty.setToolTip(_translate(
-            "MainWindow", "Identifikuje karty a přiřadí je hráčům"))
+            "MainWindow", "Identifies all the cards on the image and assigns"
+            + " them to players"))
         self.action_odkryj_karty.setText(
-            _translate("MainWindow", "Odkryj karty"))
+            _translate("MainWindow", "Next step"))
         self.action_odkryj_karty.setToolTip(
-            _translate("MainWindow", "Odkryje neznámé karty na stole"))
+            _translate("MainWindow", "Simulates the next game state"))
         self.action_spocti_pravdepodobnosti.setText(
-            _translate("MainWindow", "Spočti pravděpodobnosti"))
+            _translate("MainWindow", "Compute probabilities"))
         self.action_spocti_pravdepodobnosti.setToolTip(_translate(
-            "MainWindow", "Spočte pravděpodobnosti hráčů na výhru"))
+            "MainWindow", "Probabilities of win and draw for every player"))
 
 
 if __name__ == "__main__":
