@@ -5,7 +5,7 @@ Application input: Image of poker table <br />
 Application output: Probabilities of win/draw for each player
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/hrdlickajan/DP/master/img/vzor.PNG">
+<img src="https://raw.githubusercontent.com/hrdlickajan/Poker-Probability-Calculator/master/img/vzor.PNG">
 </p>
 
 This repository contains GUI that:
