@@ -9,11 +9,11 @@ Application output: Probabilities of win/draw for each player
 </p>
 
 This repository contains GUI that:
-* Can generate synthetic poker tables with random number of players with random cards
 * Detects and identifies all poker cards on the table with a trained CNN included in this repository
 * Analyses the state of the game; which player has which cards
 * Computes probability of win/draw for each player with Monte-Carlo simulations
-* Simulates next game state
+* Simulates the next game state
+* Can generate digital images of poker tables with random number of players with random cards
 
 
 ### Install
@@ -30,3 +30,5 @@ pip install -r requirements.txt
 5. Tlačítko "Rozpoznej karty" identifikuje pokerové karty a přiřadí je hráčům
 6. "Odkryj karty" vygeneruje místo otočených karet na stole náhodnou hrací kartu
 7. "Spočti pravděpodobnosti" provede několik simulací pokerových her a vypíše pravděpodobnosti výhry/remízy pro každého hráče
+
+todo: rewrite code in english
