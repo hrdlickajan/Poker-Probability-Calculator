@@ -4,7 +4,7 @@ Made in Python 3 for Texas Hold'em poker
 Application input: Image of poker table <br />
 Application output: Probabilities of win/draw for each player
 
-<p align="center"> 
+<p align="center">
 <img src="https://raw.githubusercontent.com/hrdlickajan/DP/master/img/vzor.PNG">
 </p>
 
@@ -24,11 +24,13 @@ pip install -r requirements.txt
 
 ### Usage
 1. run poker.py
-2. Button "Načti síť" - vybrat složku se sítí v tensorflow - "sit_final_sety", po úspěšném načtení se zaškrtne checkbox "síť načtena"
-3. lze buď načíst reálný obrázek stolu pomocí tlačítka "Načti obrázek" (vzorové obrázky stolu jsou ve složce "obrazky")
-4. nebo generovat náhodný syntetický obrázek tlačítkem "Generuj náhodný obrázek"
-5. Tlačítko "Rozpoznej karty" identifikuje pokerové karty a přiřadí je hráčům
-6. "Odkryj karty" vygeneruje místo otočených karet na stole náhodnou hrací kartu
-7. "Spočti pravděpodobnosti" provede několik simulací pokerových her a vypíše pravděpodobnosti výhry/remízy pro každého hráče
+2. Button "Load net" - choose folder CNN-cards to load neural network to classify cards
+3. Button "Load image" - loads any image and displays it in GUI, some sample images with poker tables are in the folder "sample_images"
+4. Button "Generate random image" - generates a synthetic poker image with random cards and random player count
+5. Button "Identify" - identify all cards and assign them to players
+6. Button "Next step" - simulates the next game state and shows it in GUI
+7. Button "Compute probabilities" - computes probabilities of win and draw for every player and displays it in the table from highest to lowest
+
+example order(s): 1-2-3(or 4)-5-6(or 7)
 
 todo: rewrite code in english
